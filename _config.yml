@@ -3,17 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: FireroundBlog
 subtitle: ''
-description: ''
-keywords:
-author: John Doe
-language: en
+description: 'A place to write code and life'
+keywords: blog, java
+author: Fireround
+language: zh-CN
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: https://github.com/fireroundgithub
+root: fireround.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
