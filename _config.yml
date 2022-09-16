@@ -105,3 +105,22 @@ deploy:
     type: git
     repo: git@github.com:fireroundgithub/fireroundgithub.github.io.git  #这里的网址填你自己的
     branch: main
+
+jsonContent:
+    meta: false
+    pages: false
+    posts:
+      title: true
+      date: true
+      path: true
+      text: false
+      raw: false
+      content: false
+      slug: false
+      updated: false
+      comments: false
+      link: false
+      permalink: false
+      excerpt: false
+      categories: false
+      tags: true
