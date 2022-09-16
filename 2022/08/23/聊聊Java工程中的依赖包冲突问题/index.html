@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://github.com">
-  <title>HikariCP监控指标介绍和应用 | FireroundBlog</title>
+  <title>聊聊 Java 工程中的依赖包冲突问题 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。 监控指标就像com.zaxxer.hikari.metrics.PoolStats提供的那样，几个重要的指标都存储在poolState中。  totalConn">
+  <meta name="description" content="背景先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HikariCP监控指标介绍和应用">
-<meta property="og:url" content="https://github.com/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:title" content="聊聊 Java 工程中的依赖包冲突问题">
+<meta property="og:url" content="https://github.com/2022/08/23/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="概述HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。 监控指标就像com.zaxxer.hikari.metrics.PoolStats提供的那样，几个重要的指标都存储在poolState中。  totalConn">
+<meta property="og:description" content="背景先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png">
-<meta property="article:published_time" content="2019-10-28T03:48:16.000Z">
-<meta property="article:modified_time" content="2022-09-16T04:36:00.592Z">
+<meta property="article:published_time" content="2022-08-23T09:35:30.000Z">
+<meta property="article:modified_time" content="2022-09-16T06:02:41.839Z">
 <meta property="article:author" content="Fireround">
-<meta property="article:tag" content="HikariCP">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="ClassLoader">
+<meta property="article:tag" content="隔离">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png">
   
     <link rel="alternative" href="/atom.xml" title="FireroundBlog" type="application/atom+xml">
   
@@ -157,67 +157,34 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-HikariCP监控指标介绍和应用" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-聊聊Java工程中的依赖包冲突问题" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      HikariCP监控指标介绍和应用
+      聊聊 Java 工程中的依赖包冲突问题
     </h1>
   
 
         
-        <a href="/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/" class="archive-article-date">
-  	<time datetime="2019-10-28T03:48:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-28</time>
+        <a href="/2022/08/23/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" class="archive-article-date">
+  	<time datetime="2022-08-23T09:35:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-08-23</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。</p>
-<h2 id="监控指标"><a href="#监控指标" class="headerlink" title="监控指标"></a>监控指标</h2><p>就像<code>com.zaxxer.hikari.metrics.PoolStats</code>提供的那样，几个重要的指标都存储在poolState中。</p>
-<ul>
-<li><p>totalConnections<br>总连接数，包括空闲的连接和使用中的连接。</p>
-</li>
-<li><p>idleConnections 空闲连接数</p>
-</li>
-<li><p>activeConnections<br>活跃连接数</p>
-</li>
-</ul>
-<p>totalConnections &#x3D; activeConnection + idleConnections</p>
-<ul>
-<li><p>pendingThreads<br>正在等待连接的线程数量。排查性能问题时，这个指标是一个重要的参考指标，如果正在等待连接的线程在相当一段时间内数量较多，可以考虑扩大数据库连接池的size。（即HikariCP的maxPoolSize）</p>
-</li>
-<li><p>maxConnections<br>最大连接数，统计指标，统计到目前为止连接的最大数量。</p>
-</li>
-<li><p>minConnections<br>最小连接数，统计指标，统计到目前为止连接的最小数量。</p>
-</li>
-<li><p>usageTime<br>每个连接使用的时间，当连接被回收的时候会记录此指标：<code>com.zaxxer.hikari.pool.HikariPool#recycle</code></p>
-</li>
-<li><p>acquireTime<br>获取每个连接需要等待时间，一个请求获取数据库连接后或者因为超时失败后，会记录此指标。</p>
-</li>
-<li><p>connectionCreateTime<br>连接创建时间</p>
-</li>
-</ul>
-<h2 id="如何监控"><a href="#如何监控" class="headerlink" title="如何监控"></a>如何监控</h2><p>这里拿我们比较熟悉的SpringBoot项目为例，同时使用prometheus和grafana，项目中加入promethues的依赖：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation &#x27;org.springframework.boot:spring-boot-starter-actuator&#x27;</span><br><span class="line">implementation &#x27;io.micrometer:micrometer-registry-prometheus:1.3.0&#x27;</span><br></pre></td></tr></table></figure>
-<p>同时在SpringBoot项目的application.properties配置文件中加入以下参数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">management.endpoints.web.exposure.include=prometheus 暴露prometheus格式化的指标，这样可以被promethues服务器抓取</span><br></pre></td></tr></table></figure>
-<p>接下来我们需要启动一个prometheus的服务，<a target="_blank" rel="noopener" href="https://prometheus.io/download/">https://prometheus.io/download/</a> 然后更改下peometheus服务的默认配置再启动，追加配置如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &#x27;prometheus-test&#x27; # job名称</span><br><span class="line">  scrape_interval: 5s # 抓取时间间隔，这里每5s像数据源请求一次</span><br><span class="line">  metrics_path: &#x27;/actuator/prometheus&#x27;</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&#x27;127.0.0.1:8080&#x27;] # 这里是springBoot项目的地址</span><br></pre></td></tr></table></figure>
-<p>接着启动一个grafana的服务，<a target="_blank" rel="noopener" href="https://grafana.com/get">https://grafana.com/get</a> 启动后添加prometheus数据源，制作仪表盘等。</p>
-<p><img src="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png"></p>
-<h2 id="扩展知识"><a href="#扩展知识" class="headerlink" title="扩展知识"></a>扩展知识</h2><ul>
-<li><p>Micrometer<br>Vendor-neutral application metrics facade（与供应商无关的应用程序指标外观）。我们可以把它类比于日志框架中的slf4j。把promethues类比于logback。应用程序直接依赖Micrometer来暴露指标。Micrometer比较受欢迎，已经作为SpringBoot2.0内置的指标门面库。</p>
-</li>
-<li><p>Dropwizard<br>一个Java框架，类似于SpringBoot，但国内使用较少。其中有提供metrics相关的功能。</p>
-</li>
-<li><p>Prometheus<br>一个监控器的实现，基于pull模型，定时像prometheus数据源拉取指标信息。做分析、处理和展示。</p>
-</li>
-</ul>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越费劲儿，比如 bcprov 这个包，向后兼容做的一般。为了找到那个既适合银行 A 的依赖版本，又适合银行 B 的依赖版本很难，于是不得不寻找一种更有效的解决办法。</p>
+<h2 id="方案选择"><a href="#方案选择" class="headerlink" title="方案选择"></a>方案选择</h2><h3 id="使用类加载器隔离的机制"><a href="#使用类加载器隔离的机制" class="headerlink" title="使用类加载器隔离的机制"></a>使用类加载器隔离的机制</h3><p>这个就是说，JVM 不允许同一个 JVM 进程里面存在相同 classLoader 加载的且相同类限定名的 class 存在于一个进程里。也就是说，只要类加载器不一样，是可以有两个同名的类共存于进程里的。我们可以在使用银行 A 的 SDK时，让 classloader A 加载银行 A 的SDK。这样，在加载银行 A 的 SDK 的过程中，他会顺带使用 classloader A 把 SDK 的依赖都加载一遍。而我们要做的主要是告诉 classloader A， SDK-A 及其依赖的路径，但是该路径下是不可能找到 SDK-B 及其依赖的（这个是关键）。<br>以下是具体的代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Closeable;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.net.URLClassLoader;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> wencheng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2022/8/23</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChannelSdkManager</span> <span class="keyword">implements</span> <span class="title class_">Closeable</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, URLClassLoader&gt; classLoaderMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, String&gt; sdkClassNameMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> ChannelSdkManager channelSdkManager;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="title function_">ChannelSdkManager</span><span class="params">()</span> &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> ChannelSdkManager <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(channelSdkManager == <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="keyword">synchronized</span> (ChannelSdkManager.class) &#123;</span><br><span class="line">				<span class="keyword">if</span>(channelSdkManager == <span class="literal">null</span>) &#123;</span><br><span class="line">					channelSdkManager = <span class="keyword">new</span> <span class="title class_">ChannelSdkManager</span>();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> channelSdkManager;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerSdk</span><span class="params">(String channelCode, File libPath, String sdkClassName)</span> &#123;</span><br><span class="line">		File[] file = libPath.listFiles();</span><br><span class="line">		URL[] libUrls = Arrays.stream(file).map(f -&gt; &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> f.toURI().toURL();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;).collect(Collectors.toList()).toArray(<span class="keyword">new</span> <span class="title class_">URL</span>[file.length]);</span><br><span class="line">		<span class="type">URLClassLoader</span> <span class="variable">classLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URLClassLoader</span>(libUrls);</span><br><span class="line">		classLoaderMap.put(channelCode, classLoader);</span><br><span class="line">		sdkClassNameMap.put(channelCode, sdkClassName);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> Class&lt;?&gt; getSdk(String channelCode) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">		<span class="keyword">if</span> (!classLoaderMap.containsKey(channelCode)) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Channel &#x27;&quot;</span> + channelCode + <span class="string">&quot;&#x27; not registered&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Class&lt;?&gt; sdkClass = classLoaderMap.get(channelCode).loadClass(sdkClassNameMap.get(channelCode));</span><br><span class="line">		<span class="keyword">return</span> sdkClass;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> &#123;</span><br><span class="line">		classLoaderMap.values().forEach(cl -&gt; &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				cl.close();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下是工程依赖的文件结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">lib</span><br><span class="line">├── channel-a</span><br><span class="line">│   ├── dep.jar</span><br><span class="line">│   └── sdk-a.jar</span><br><span class="line">└── channel-b</span><br><span class="line">    ├── dep.jar</span><br><span class="line">    └── sdk-b.jar</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="附录："><a href="#附录：" class="headerlink" title="附录："></a>附录：</h2><p><a target="_blank" rel="noopener" href="https://www.sofastack.tech/projects/sofa-boot/sofa-ark-readme/">SOFAArk 介绍</a></p>
 
       
 
@@ -231,7 +198,15 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">HikariCP</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">ClassLoader</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">隔离</a>
         		</li>
       		
 		</ul>
@@ -287,7 +262,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/08/23/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -301,18 +276,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2022/06/14/%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BD%BF%E7%94%A8Maven%E6%9C%8D%E5%8A%A1%E4%BA%8E%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Maven 是如何管理仓库的
+          那些我接触和使用到的设计模式
         
       </div>
     </a>
   
   
-    <a href="/2019/10/28/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">HikariCP的那些关键配置：提高连接池性能</div>
+    <a href="/2022/06/14/%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BD%BF%E7%94%A8Maven%E6%9C%8D%E5%8A%A1%E4%BA%8E%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Maven 是如何管理仓库的</div>
       <i class="icon-circle-right"></i>
     </a>
   
