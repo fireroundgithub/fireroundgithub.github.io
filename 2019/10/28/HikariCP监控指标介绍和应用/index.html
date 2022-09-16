@@ -8,18 +8,20 @@
   <link rel="dns-prefetch" href="https://github.com">
   <title>HikariCP监控指标介绍和应用 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="A place to write code and life">
+  <meta name="description" content="概述HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。 监控指标就像com.zaxxer.hikari.metrics.PoolStats提供的那样，几个重要的指标都存储在poolState中。  totalConn">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HikariCP监控指标介绍和应用">
 <meta property="og:url" content="https://github.com/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="A place to write code and life">
+<meta property="og:description" content="概述HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。 监控指标就像com.zaxxer.hikari.metrics.PoolStats提供的那样，几个重要的指标都存储在poolState中。  totalConn">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png">
 <meta property="article:published_time" content="2019-10-28T03:48:16.000Z">
-<meta property="article:modified_time" content="2022-09-16T03:48:43.572Z">
+<meta property="article:modified_time" content="2022-09-16T03:52:15.023Z">
 <meta property="article:author" content="Fireround">
 <meta property="article:tag" content="blog, java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png">
   
     <link rel="alternative" href="/atom.xml" title="FireroundBlog" type="application/atom+xml">
   
@@ -175,7 +177,48 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。</p>
+<h2 id="监控指标"><a href="#监控指标" class="headerlink" title="监控指标"></a>监控指标</h2><p>就像<code>com.zaxxer.hikari.metrics.PoolStats</code>提供的那样，几个重要的指标都存储在poolState中。</p>
+<ul>
+<li><p>totalConnections<br>总连接数，包括空闲的连接和使用中的连接。</p>
+</li>
+<li><p>idleConnections 空闲连接数</p>
+</li>
+<li><p>activeConnections<br>活跃连接数</p>
+</li>
+</ul>
+<p>totalConnections &#x3D; activeConnection + idleConnections</p>
+<ul>
+<li><p>pendingThreads<br>正在等待连接的线程数量。排查性能问题时，这个指标是一个重要的参考指标，如果正在等待连接的线程在相当一段时间内数量较多，可以考虑扩大数据库连接池的size。（即HikariCP的maxPoolSize）</p>
+</li>
+<li><p>maxConnections<br>最大连接数，统计指标，统计到目前为止连接的最大数量。</p>
+</li>
+<li><p>minConnections<br>最小连接数，统计指标，统计到目前为止连接的最小数量。</p>
+</li>
+<li><p>usageTime<br>每个连接使用的时间，当连接被回收的时候会记录此指标：<code>com.zaxxer.hikari.pool.HikariPool#recycle</code></p>
+</li>
+<li><p>acquireTime<br>获取每个连接需要等待时间，一个请求获取数据库连接后或者因为超时失败后，会记录此指标。</p>
+</li>
+<li><p>connectionCreateTime<br>连接创建时间</p>
+</li>
+</ul>
+<h2 id="如何监控"><a href="#如何监控" class="headerlink" title="如何监控"></a>如何监控</h2><p>这里拿我们比较熟悉的SpringBoot项目为例，同时使用prometheus和grafana，项目中加入promethues的依赖：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation &#x27;org.springframework.boot:spring-boot-starter-actuator&#x27;</span><br><span class="line">implementation &#x27;io.micrometer:micrometer-registry-prometheus:1.3.0&#x27;</span><br></pre></td></tr></table></figure>
+<p>同时在SpringBoot项目的application.properties配置文件中加入以下参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">management.endpoints.web.exposure.include=prometheus 暴露prometheus格式化的指标，这样可以被promethues服务器抓取</span><br></pre></td></tr></table></figure>
+<p>接下来我们需要启动一个prometheus的服务，<a target="_blank" rel="noopener" href="https://prometheus.io/download/">https://prometheus.io/download/</a> 然后更改下peometheus服务的默认配置再启动，追加配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &#x27;prometheus-test&#x27; # job名称</span><br><span class="line">  scrape_interval: 5s # 抓取时间间隔，这里每5s像数据源请求一次</span><br><span class="line">  metrics_path: &#x27;/actuator/prometheus&#x27;</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&#x27;127.0.0.1:8080&#x27;] # 这里是springBoot项目的地址</span><br></pre></td></tr></table></figure>
+<p>接着启动一个grafana的服务，<a target="_blank" rel="noopener" href="https://grafana.com/get">https://grafana.com/get</a> 启动后添加prometheus数据源，制作仪表盘等。</p>
+<p><img src="https://img2018.cnblogs.com/blog/1515962/201910/1515962-20191028223840285-1259364311.png"></p>
+<h2 id="扩展知识"><a href="#扩展知识" class="headerlink" title="扩展知识"></a>扩展知识</h2><ul>
+<li><p>Micrometer<br>Vendor-neutral application metrics facade（与供应商无关的应用程序指标外观）。我们可以把它类比于日志框架中的slf4j。把promethues类比于logback。应用程序直接依赖Micrometer来暴露指标。Micrometer比较受欢迎，已经作为SpringBoot2.0内置的指标门面库。</p>
+</li>
+<li><p>Dropwizard<br>一个Java框架，类似于SpringBoot，但国内使用较少。其中有提供metrics相关的功能。</p>
+</li>
+<li><p>Prometheus<br>一个监控器的实现，基于pull模型，定时像prometheus数据源拉取指标信息。做分析、处理和展示。</p>
+</li>
+</ul>
+
       
 
       
@@ -388,11 +431,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Java, ClassLoader, 隔离</a>
+                <a href="javascript:void(0)" class="js-tag color5">交易系统, 对账, 系统架构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">交易系统, 对账, 系统架构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">ClassLoader</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">隔离</a>
               </li>
             
             <div class="clearfix"></div>
