@@ -6,17 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://github.com">
-  <title>HikariCP的那些关键配置：提高连接池性能 | FireroundBlog</title>
+  <title>Archives: 2019/10 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述HikariCP是Spring Framework 5.0的默认数据库连接池，这得益于他的高性能。但是如果配置不当，数据库连接池也可能因影响到系统性能。 重要参数 maximum-pool-size minimum-idle pool-name auto-commit idle-timeout max-lifetime connection-timeout  初始化过程和连接创建逻辑当Hika">
-<meta property="og:type" content="article">
-<meta property="og:title" content="HikariCP的那些关键配置：提高连接池性能">
-<meta property="og:url" content="https://github.com/2022/09/16/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/index.html">
+  <meta name="description" content="A place to write code and life">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FireroundBlog">
+<meta property="og:url" content="https://github.com/archives/2019/10/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="概述HikariCP是Spring Framework 5.0的默认数据库连接池，这得益于他的高性能。但是如果配置不当，数据库连接池也可能因影响到系统性能。 重要参数 maximum-pool-size minimum-idle pool-name auto-commit idle-timeout max-lifetime connection-timeout  初始化过程和连接创建逻辑当Hika">
+<meta property="og:description" content="A place to write code and life">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-09-16T03:46:09.000Z">
-<meta property="article:modified_time" content="2022-09-16T03:46:21.068Z">
 <meta property="article:author" content="Fireround">
 <meta property="article:tag" content="blog, java">
 <meta name="twitter:card" content="summary">
@@ -155,152 +153,76 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-HikariCP的那些关键配置：提高连接池性能" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      HikariCP的那些关键配置：提高连接池性能
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/" class="archive-article-date">
+  	<time datetime="2019-10-28T03:48:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-28</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/10/28/HikariCP%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8/">HikariCP监控指标介绍和应用</a>
     </h1>
   
 
-        
-        <a href="/2022/09/16/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/" class="archive-article-date">
-  	<time datetime="2022-09-16T03:46:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-09-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>HikariCP是Spring Framework 5.0的默认数据库连接池，这得益于他的高性能。但是如果配置不当，数据库连接池也可能因影响到系统性能。</p>
-<h3 id="重要参数"><a href="#重要参数" class="headerlink" title="重要参数"></a>重要参数</h3><ul>
-<li>maximum-pool-size</li>
-<li>minimum-idle</li>
-<li>pool-name</li>
-<li>auto-commit</li>
-<li>idle-timeout</li>
-<li>max-lifetime</li>
-<li>connection-timeout</li>
-</ul>
-<h4 id="初始化过程和连接创建逻辑"><a href="#初始化过程和连接创建逻辑" class="headerlink" title="初始化过程和连接创建逻辑"></a>初始化过程和连接创建逻辑</h4><p>当HikariCP初始化时候，会将添加连接到池中，直到达到minimum-idle的数量，此时保持这个状态。当有新的连接池请求时，HikariCP会返回一个connection的代理。当connection都处于使用状态时，若此时有新的连接池请求，HikariCP就会继续新建connection直到达到maximun-pool-size。</p>
-<h4 id="maximum-pool-size"><a href="#maximum-pool-size" class="headerlink" title="maximum-pool-size"></a>maximum-pool-size</h4><p>池中最大连接数（包括空闲和正在使用的连接）。默认值是10，这个一般预估应用的最大连接数，后期根据监测得到一个最大值的一个平均值。要知道，最大连接并不是越多越好，一个connection会占用系统的带宽和存储。但是 当连接池没有空闲连接并且已经到达最大值，新来的连接池请求（HikariPool#getConnection）会被阻塞直到<code>connectionTimeout</code>（毫秒），超时后便抛出SQLException。</p>
-<h4 id="minimum-idle"><a href="#minimum-idle" class="headerlink" title="minimum-idle"></a>minimum-idle</h4><p>池中最小空闲连接数量。默认值10，小于池中最大连接数，一般根据系统大部分情况下的数据库连接情况取一个平均值。Hikari会尽可能、尽快地将空闲连接数维持在这个数量上。如果为了获得最佳性能和对峰值需求的响应能力，我们也不妨让他和最大连接数保持一致，使得HikariCP成为一个固定大小的数据库连接池。</p>
-<h4 id="pool-name"><a href="#pool-name" class="headerlink" title="pool-name"></a>pool-name</h4><p>连接池的名字。一般会出现在日志和JMX控制台中。默认值：auto-genenrated。建议取一个合适的名字，便于监控。</p>
-<h4 id="auto-commit"><a href="#auto-commit" class="headerlink" title="auto-commit"></a>auto-commit</h4><p>是否自动提交池中返回的连接。默认值为true。一般是有必要自动提交上一个连接中的事物的。如果为false，那么就需要应用层手动提交事物。</p>
-<h4 id="idle-timeout"><a href="#idle-timeout" class="headerlink" title="idle-timeout"></a>idle-timeout</h4><p>空闲时间。仅在minimum-idle小于maximum-poop-size的时候才会起作用。默认值10分钟。根据应用实际情况做调整，对于一些间歇性流量达到峰值的应用，一般需要考虑设置的比间歇时间更大，防止创建数据库连接拖慢了应用速度。</p>
-<h4 id="max-lifetime"><a href="#max-lifetime" class="headerlink" title="max-lifetime"></a>max-lifetime</h4><p>连接池中连接的最大生命周期。当连接一致处于闲置状态时，数据库可能会主动断开连接。为了防止大量的同一时间处于空闲连接因为数据库方的闲置超时策略断开连接（可以理解为连接雪崩），一般将这个值设置的比数据库的“闲置超时时间”小几秒，以便这些连接断开后，HikariCP能迅速的创建新一轮的连接。</p>
-<h4 id="connection-timeout"><a href="#connection-timeout" class="headerlink" title="connection-timeout"></a>connection-timeout</h4><p>连接超时时间。默认值为30s，可以接收的最小超时时间为250ms。但是连接池请求也可以自定义超时时间（com.zaxxer.hikari.pool.HikariPool#getConnection(long)）。</p>
+        <div class="article-info info-on-right">
+          
+          
 
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/09/16/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
   
-<nav id="article-nav">
-  
-  
-    <a href="/2022/09/14/%E7%AC%AC%E4%B8%89%E6%96%B9%E6%90%AD%E5%BB%BA%E7%9A%84%E9%9D%A2%E5%90%91%E9%93%B6%E8%A1%8C%E5%AD%98%E6%AC%BE%E7%9A%84%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E5%AF%B9%E8%B4%A6/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">第三方搭建的面向银行存款的交易系统如何对账</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/10/28/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/" class="archive-article-date">
+  	<time datetime="2019-10-28T03:46:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-28</time>
+</a>
         </div>
-        
-        
-    </div>
-</aside>
-
-
-
+    	 
   
-  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/10/28/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/">HikariCP的那些关键配置：提高连接池性能</a>
+    </h1>
   
 
+        <div class="article-info info-on-right">
+          
+          
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -323,8 +245,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
