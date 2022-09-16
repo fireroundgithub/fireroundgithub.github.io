@@ -1,5 +1,5 @@
 ---
-title: 更好的使用Maven服务于日常工作
+title: Maven 是如何管理仓库的
 date: 2022-09-14 14:48:26
 tags: maven
 ---
