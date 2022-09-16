@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://github.com">
-  <title>聊聊 Java 工程中的依赖包冲突问题 | FireroundBlog</title>
+  <title>那些我接触和使用到的设计模式 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="先说一下背景，附录：">
+  <meta name="description" content="我工作五年多了，接触的项目有从原生 Servlet 手写起来的，有用自研的基于 OSGI 框架搭起来的，有基于 Spring Boot 整合的（上百个研发参与、几十模块集成到一起），也有基于 Spring MVC + Tomcat 玩的。这些东西虽然开发框架不同，但是处理某些具体问题时使用的代码结构大都有相同的影子，我们习惯把这种“相同的影子”叫做设计模式。今天我就想聊聊这些我接触到的和使用过的设">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊聊 Java 工程中的依赖包冲突问题">
-<meta property="og:url" content="https://github.com/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:title" content="那些我接触和使用到的设计模式">
+<meta property="og:url" content="https://github.com/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="先说一下背景，附录：">
+<meta property="og:description" content="我工作五年多了，接触的项目有从原生 Servlet 手写起来的，有用自研的基于 OSGI 框架搭起来的，有基于 Spring Boot 整合的（上百个研发参与、几十模块集成到一起），也有基于 Spring MVC + Tomcat 玩的。这些东西虽然开发框架不同，但是处理某些具体问题时使用的代码结构大都有相同的影子，我们习惯把这种“相同的影子”叫做设计模式。今天我就想聊聊这些我接触到的和使用过的设">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-09-01T09:35:30.000Z">
-<meta property="article:modified_time" content="2022-09-02T04:41:14.603Z">
+<meta property="article:published_time" content="2022-09-01T12:23:28.000Z">
+<meta property="article:modified_time" content="2022-09-15T03:57:33.556Z">
 <meta property="article:author" content="Fireround">
-<meta property="article:tag" content="Java, ClassLoader, 隔离">
+<meta property="article:tag" content="blog, java">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="FireroundBlog" type="application/atom+xml">
@@ -155,27 +155,27 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-聊聊Java工程中的依赖包冲突问题" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-那些我接触和使用到的设计模式" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      聊聊 Java 工程中的依赖包冲突问题
+      那些我接触和使用到的设计模式
     </h1>
   
 
         
-        <a href="/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2022-09-01T09:35:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-09-01</time>
+        <a href="/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
+  	<time datetime="2022-09-01T12:23:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-09-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>先说一下背景，<br>附录：</p>
+        <p>我工作五年多了，接触的项目有从原生 Servlet 手写起来的，有用自研的基于 OSGI 框架搭起来的，有基于 Spring Boot 整合的（上百个研发参与、几十模块集成到一起），也有基于 Spring MVC + Tomcat 玩的。这些东西虽然开发框架不同，但是处理某些具体问题时使用的代码结构大都有相同的影子，我们习惯把这种“相同的影子”叫做设计模式。今天我就想聊聊这些我接触到的和使用过的设计模式。<br>最近接触到这么一个需求：每天需要给特定的一个商户出具一些和资金流转相关的交易的对账文件，有的文件数据通过第三方接口查，有的文件数据从本地数据库取，这些文件需要被放到商户给的阿里云 OSS 上。需求就是这样，看着很简单，但是文件种类有点多，每个文件的取的地方还不一样。再就是虽然需求是只需要支持阿里云 OSS，但是这只是针对一个商户的，保不准下次其他哪个商户使用腾讯 COS、自己的 SFTP 文件服务，或者压根儿商户就没有文件服务，那我们得给他们提供一个文件服务器。</p>
 
       
 
@@ -184,17 +184,6 @@
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java, ClassLoader, 隔离</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
@@ -245,7 +234,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -259,15 +248,20 @@
   
 <nav id="article-nav">
   
-    <a href="/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2022/09/14/%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BD%BF%E7%94%A8Maven%E6%9C%8D%E5%8A%A1%E4%BA%8E%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          那些我接触和使用到的设计模式
+          Maven 是如何管理仓库的
         
       </div>
     </a>
   
+  
+    <a href="/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">聊聊 Java 工程中的依赖包冲突问题</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 

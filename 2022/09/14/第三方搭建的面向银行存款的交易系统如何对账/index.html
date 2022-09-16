@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://github.com">
-  <title>聊聊 Java 工程中的依赖包冲突问题 | FireroundBlog</title>
+  <title>第三方搭建的面向银行存款的交易系统如何对账 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="先说一下背景，附录：">
+  <meta name="description" content="背景前段时间沸沸扬扬的河南村镇银行的事件已经接近尾声，这是一个面向银行存款的交易系统。一个完整的交易过程是这样：用户首先通过我们的系统开户，开户后银行会给用户分配一个电子账户。之后用户往该电子账户上充值。然后选择存款产品，完成购买。银行周期性的给这些存款订单派发收益。用户也可以随时主动发起存款订单的支取，或者等到存款到期，银行把钱打到用户的电子账户上。用户电子账户上的钱可以随时提现。以上就是一个完">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊聊 Java 工程中的依赖包冲突问题">
-<meta property="og:url" content="https://github.com/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:title" content="第三方搭建的面向银行存款的交易系统如何对账">
+<meta property="og:url" content="https://github.com/2022/09/14/%E7%AC%AC%E4%B8%89%E6%96%B9%E6%90%AD%E5%BB%BA%E7%9A%84%E9%9D%A2%E5%90%91%E9%93%B6%E8%A1%8C%E5%AD%98%E6%AC%BE%E7%9A%84%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E5%AF%B9%E8%B4%A6/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="先说一下背景，附录：">
+<meta property="og:description" content="背景前段时间沸沸扬扬的河南村镇银行的事件已经接近尾声，这是一个面向银行存款的交易系统。一个完整的交易过程是这样：用户首先通过我们的系统开户，开户后银行会给用户分配一个电子账户。之后用户往该电子账户上充值。然后选择存款产品，完成购买。银行周期性的给这些存款订单派发收益。用户也可以随时主动发起存款订单的支取，或者等到存款到期，银行把钱打到用户的电子账户上。用户电子账户上的钱可以随时提现。以上就是一个完">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-09-01T09:35:30.000Z">
-<meta property="article:modified_time" content="2022-09-02T04:41:14.603Z">
+<meta property="article:published_time" content="2022-09-14T13:26:01.000Z">
+<meta property="article:modified_time" content="2022-09-16T03:40:19.797Z">
 <meta property="article:author" content="Fireround">
-<meta property="article:tag" content="Java, ClassLoader, 隔离">
+<meta property="article:tag" content="交易系统, 对账, 系统架构">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="FireroundBlog" type="application/atom+xml">
@@ -155,27 +155,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-聊聊Java工程中的依赖包冲突问题" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-第三方搭建的面向银行存款的交易系统如何对账" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      聊聊 Java 工程中的依赖包冲突问题
+      第三方搭建的面向银行存款的交易系统如何对账
     </h1>
   
 
         
-        <a href="/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2022-09-01T09:35:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-09-01</time>
+        <a href="/2022/09/14/%E7%AC%AC%E4%B8%89%E6%96%B9%E6%90%AD%E5%BB%BA%E7%9A%84%E9%9D%A2%E5%90%91%E9%93%B6%E8%A1%8C%E5%AD%98%E6%AC%BE%E7%9A%84%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E5%AF%B9%E8%B4%A6/" class="archive-article-date">
+  	<time datetime="2022-09-14T13:26:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-09-14</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>先说一下背景，<br>附录：</p>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前段时间沸沸扬扬的河南村镇银行的事件已经接近尾声，<br>这是一个面向银行存款的交易系统。一个完整的交易过程是这样：用户首先通过我们的系统开户，开户后银行会给用户分配一个电子账户。之后用户往该电子账户上充值。然后选择存款产品，完成购买。银行周期性的给这些存款订单派发收益。用户也可以随时主动发起存款订单的支取，或者等到存款到期，银行把钱打到用户的电子账户上。用户电子账户上的钱可以随时提现。以上就是一个完整的交易过程。因为我们的信息系统和银行的信息系统可能会因为系统缺陷、网络异常等原因造成两边数据不一致，从而影响到用户体验和导流分润等，所以通过对账来检查数据一致性就显得很有必要。</p>
+<h2 id="对账的目标"><a href="#对账的目标" class="headerlink" title="对账的目标"></a>对账的目标</h2><p>因为系统难免会存在缺陷、网络总是不稳定的。如果说补偿是保证数据最终一致性的关键机制，那对账是保证数据一致性的最后一道防线。对于这样一个交易系统，对账的一个基本目标就是完成两个信息系统间交易订单的核对。在对账之前，我们对自己的系统是有一个预期的：我们的系统数据和银行的系统数据大体一致。为什么说“大体”一致呢。因为有些东西天然就是不一致的，比如时间。信息流总是先经过我们，再经过银行，所以如果我们的时间总会比银行的时间早。但是订单状态、金额、产品信息等一定是一致的。<br>除此之外，还有一个目标就是同步订单收益，更新资产账户（累计收益账户、持有收益账户）。你可能会问：银行已经有账户了，我们为什么不直接查银行的？为什么要做账户？因为我们不止接一家银行，会有 N 家银行，在加上 M 家流量方，我们针对用户资产的统计需求是多维度的。如果要统计一个用户在我们系统的总收益，那么我们需要同时查询多家银行。再者就是银行也不是靠谱的，之前出现过有家银行可以无限提现，始终不扣减电子账户余额。话说回来，数据这个东西是业务的核心资产。有数据才能产生更多价值。</p>
+<h2 id="对账的流程"><a href="#对账的流程" class="headerlink" title="对账的流程"></a>对账的流程</h2><p>对账涉及到的系统包括：</p>
+<ul>
+<li>定时调度平台（每日定时通过RPC调用对账服务，触发对账）</li>
+<li>对账服务（对账逻辑）</li>
+<li>订单服务（查询D-1日交易订单）</li>
+<li>账户服务（收益入账）</li>
+<li>银行SFTP对账下载服务（查询D-1日交易对账文件）</li>
+</ul>
 
       
 
@@ -189,7 +198,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java, ClassLoader, 隔离</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">交易系统, 对账, 系统架构</a>
         		</li>
       		
 		</ul>
@@ -245,7 +254,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/09/01/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/2022/09/14/%E7%AC%AC%E4%B8%89%E6%96%B9%E6%90%AD%E5%BB%BA%E7%9A%84%E9%9D%A2%E5%90%91%E9%93%B6%E8%A1%8C%E5%AD%98%E6%AC%BE%E7%9A%84%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E5%AF%B9%E8%B4%A6/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -259,15 +268,20 @@
   
 <nav id="article-nav">
   
-    <a href="/2022/09/01/%E9%82%A3%E4%BA%9B%E6%88%91%E6%8E%A5%E8%A7%A6%E5%92%8C%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2022/09/16/HikariCP%E7%9A%84%E9%82%A3%E4%BA%9B%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%8F%90%E9%AB%98%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          那些我接触和使用到的设计模式
+          HikariCP的那些关键配置：提高连接池性能
         
       </div>
     </a>
   
+  
+    <a href="/2022/09/14/%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BD%BF%E7%94%A8Maven%E6%9C%8D%E5%8A%A1%E4%BA%8E%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Maven 是如何管理仓库的</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
