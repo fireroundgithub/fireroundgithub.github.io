@@ -5,7 +5,6 @@ tags:
   - HikariCP
 ---
 
-## 概述
 HikariCP提供了一些监控指标，他的监控指标都是基于MicroMeter提供出来的，然后支持Prometheus和Dropwizard。本次我们将讨论一下HikariCp的监控指标有哪些，为什么提供这些指标，以及咱们如何去做监控。
 
 ## 监控指标
