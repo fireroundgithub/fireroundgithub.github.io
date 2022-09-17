@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="https://github.com">
   <title>聊聊 Java 工程中的依赖包冲突问题 | FireroundBlog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="背景先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越">
+  <meta name="description" content="先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越费劲">
 <meta property="og:type" content="article">
 <meta property="og:title" content="聊聊 Java 工程中的依赖包冲突问题">
 <meta property="og:url" content="https://github.com/2022/08/23/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="FireroundBlog">
-<meta property="og:description" content="背景先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越">
+<meta property="og:description" content="先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越费劲">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-23T09:35:30.000Z">
-<meta property="article:modified_time" content="2022-09-16T06:02:41.839Z">
+<meta property="article:modified_time" content="2022-09-16T14:09:17.974Z">
 <meta property="article:author" content="Fireround">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="ClassLoader">
@@ -50,7 +50,7 @@
 <div class="intrude-less">
 	<header id="header" class="inner">
 		<a href="/" class="profilepic">
-			<img src="" class="js-avatar">
+			<img src="/img/WechatIMG6.jpeg" class="js-avatar">
 		</a>
 		<hgroup>
 		  <h1 class="header-author"><a href="/"></a></h1>
@@ -62,18 +62,12 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
-	        
 			</ul>
 		</nav>
 		<nav class="header-smart-menu">
     		
     			
     			<a q-on="click: openSlider(e, 'innerArchive')" href="javascript:void(0)">所有文章</a>
-    			
-            
-    			
-    			<a q-on="click: openSlider(e, 'friends')" href="javascript:void(0)">友链</a>
     			
             
     			
@@ -84,13 +78,7 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-		        
-					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-		        
-					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-		        
-					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+					<a class="github" target="_blank" href="https://github.com/fireroundgithub" title="github"><i class="icon-github"></i></a>
 		        
 			</div>
 		</nav>
@@ -108,7 +96,7 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-				<img src="" class="js-avatar">
+				<img src="/img/WechatIMG6.jpeg" class="js-avatar">
 			</div>
 			<hgroup>
 			  <h1 class="header-author js-header-author"></h1>
@@ -118,20 +106,12 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-			        
-						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-			        
-						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-			        
-						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+						<a class="github" target="_blank" href="https://github.com/fireroundgithub" title="github"><i class="icon-github"></i></a>
 			        
 				</div>
 			</nav>
@@ -140,9 +120,7 @@
 				<ul style="width: 50%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
-		        
-					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+					<li style="width: 100%"><a href="/">主页</a></li>
 		        
 				</ul>
 			</nav>
@@ -177,7 +155,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越费劲儿，比如 bcprov 这个包，向后兼容做的一般。为了找到那个既适合银行 A 的依赖版本，又适合银行 B 的依赖版本很难，于是不得不寻找一种更有效的解决办法。</p>
+        <p>先说一下背景，我们的项目需要对接很多家银行，每个银行都会给我们一个 SDK 或者干脆一个工程文件, 然后这个这个 SDK 带了一堆依赖包，有的是我们系统中使用到了的，有的是我们系统中没有的，但是即使是使用了的，版本也不尽相同。之前我们尝试过直接让我们的工程依赖银行的 SDK 和它附带的一堆依赖，遇到 jar 包版本冲突后，改改冲突 jar 包的版本，项目也能正常运行。但是后来发现这种办法越来越费劲儿，比如 bcprov 这个包，向后兼容做的一般。为了找到那个既适合银行 A 的依赖版本，又适合银行 B 的依赖版本很难，于是不得不寻找一种更有效的解决办法。</p>
 <h2 id="方案选择"><a href="#方案选择" class="headerlink" title="方案选择"></a>方案选择</h2><h3 id="使用类加载器隔离的机制"><a href="#使用类加载器隔离的机制" class="headerlink" title="使用类加载器隔离的机制"></a>使用类加载器隔离的机制</h3><p>这个就是说，JVM 不允许同一个 JVM 进程里面存在相同 classLoader 加载的且相同类限定名的 class 存在于一个进程里。也就是说，只要类加载器不一样，是可以有两个同名的类共存于进程里的。我们可以在使用银行 A 的 SDK时，让 classloader A 加载银行 A 的SDK。这样，在加载银行 A 的 SDK 的过程中，他会顺带使用 classloader A 把 SDK 的依赖都加载一遍。而我们要做的主要是告诉 classloader A， SDK-A 及其依赖的路径，但是该路径下是不可能找到 SDK-B 及其依赖的（这个是关键）。<br>以下是具体的代码实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Closeable;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.net.URLClassLoader;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> wencheng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2022/8/23</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChannelSdkManager</span> <span class="keyword">implements</span> <span class="title class_">Closeable</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, URLClassLoader&gt; classLoaderMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, String&gt; sdkClassNameMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> ChannelSdkManager channelSdkManager;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="title function_">ChannelSdkManager</span><span class="params">()</span> &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> ChannelSdkManager <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(channelSdkManager == <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="keyword">synchronized</span> (ChannelSdkManager.class) &#123;</span><br><span class="line">				<span class="keyword">if</span>(channelSdkManager == <span class="literal">null</span>) &#123;</span><br><span class="line">					channelSdkManager = <span class="keyword">new</span> <span class="title class_">ChannelSdkManager</span>();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> channelSdkManager;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerSdk</span><span class="params">(String channelCode, File libPath, String sdkClassName)</span> &#123;</span><br><span class="line">		File[] file = libPath.listFiles();</span><br><span class="line">		URL[] libUrls = Arrays.stream(file).map(f -&gt; &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> f.toURI().toURL();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;).collect(Collectors.toList()).toArray(<span class="keyword">new</span> <span class="title class_">URL</span>[file.length]);</span><br><span class="line">		<span class="type">URLClassLoader</span> <span class="variable">classLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URLClassLoader</span>(libUrls);</span><br><span class="line">		classLoaderMap.put(channelCode, classLoader);</span><br><span class="line">		sdkClassNameMap.put(channelCode, sdkClassName);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> Class&lt;?&gt; getSdk(String channelCode) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">		<span class="keyword">if</span> (!classLoaderMap.containsKey(channelCode)) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Channel &#x27;&quot;</span> + channelCode + <span class="string">&quot;&#x27; not registered&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Class&lt;?&gt; sdkClass = classLoaderMap.get(channelCode).loadClass(sdkClassNameMap.get(channelCode));</span><br><span class="line">		<span class="keyword">return</span> sdkClass;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> &#123;</span><br><span class="line">		classLoaderMap.values().forEach(cl -&gt; &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				cl.close();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>以下是工程依赖的文件结构：</p>
@@ -286,7 +264,7 @@
     </a>
   
   
-    <a href="/2022/06/14/%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BD%BF%E7%94%A8Maven%E6%9C%8D%E5%8A%A1%E4%BA%8E%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2022/06/14/Maven%20%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E4%BB%93%E5%BA%93%E7%9A%84/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Maven 是如何管理仓库的</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -320,6 +298,22 @@
 
   
 
+  
+  <div id="gitment-ctn"></div> 
+<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
+<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: "https://github.com/2022/08/23/%E8%81%8A%E8%81%8AJava%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%E5%8C%85%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/",
+  owner: 'fireroundgithub',
+  repo: 'fireroundgithub.github.io',
+  oauth: {
+    client_id: 'efedd4684567a4c8038a',
+    client_secret: 'c3bb0a0eef93631659f634db3d656196a265fcd0',
+  },
+})
+gitment.render('gitment-ctn')
+</script>
   
 
 
@@ -374,25 +368,17 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
       
       
     
-      
-      
-      
-    
     
 
     <ul style="width: 70%">
     
     
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
       
         
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'friends')"><a href="javascript:void(0)" q-class="active:friends">友链</a></li>
-      
-        
-      
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
       
         
     </ul>
@@ -492,43 +478,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
 
     
-    	<section class="tools-section tools-section-friends" q-show="friends">
-  		
-        <ul class="search-ul">
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接1</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接2</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接3</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接4</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接5</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接6</a>
-            </li>
-          
-        </ul>
-  		
-    	</section>
-    
 
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">嗨，你好，欢迎来到我的博客。我是一个 Java 程序员，做过报表、支付订单系统和银行理财类交易系统。爱折腾，有些完美主义但有时不太聚焦。工作多年但总结的太少，希望借着博客总结下属于自己的一些知识。也希望你不吝啬你的评论，多多交流，一起进步。</div>
   	  	
     	</section>
     
